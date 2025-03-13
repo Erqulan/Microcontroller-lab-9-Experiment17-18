@@ -1,0 +1,27 @@
+17.2
+#include <Servo.h>
+
+#define LIGHT_SENSOR A1 // 光照传感器的引脚
+#define TARGET_LIGHT 500 // 目标光照值 (0-1023)
+#define MAX_ANGLE 180 // 伺服电机最大角度
+
+Servo myServo;
+
+void setup()
+{
+    myServo.attach(9);
+}
+
+void loop()
+{
+    int lightLevel = analogRead(LIGHT_SENSOR);
+    
+    // 根据光照强度调整窗帘的角度
+    int angle = map(lightLevel, 0, 1023, MAX_ANGLE, 0); // 光照越强，窗帘关闭越多
+    
+    angle = constrain(angle, 0, MAX_ANGLE);
+    
+    myServo.write(angle);
+    
+    delay(100); // 添加延迟，提高稳定性
+}
