@@ -1,0 +1,30 @@
+#include <LiquidCrystal.h>
+
+// Инициализация LCD-дисплея (укажите нужные пины)
+LiquidCrystal lcd(13, 12, 11, 10, 9, 8);
+
+void setup() {
+    lcd.begin(16, 2);  // Указываем размер дисплея (16x2)
+    lcd.print("Stopwatch:"); // Выводим заголовок
+}
+
+void loop() {
+    unsigned long timeMillis = millis(); // Получаем текущее время в миллисекундах
+    unsigned long seconds = timeMillis / 1000; // Полные секунды
+    unsigned long hundredths = (timeMillis % 1000) / 10; // Сотые доли секунды
+
+    // Устанавливаем курсор во вторую строку дисплея
+    lcd.setCursor(0, 1);
+
+    // Очищаем строку перед обновлением (чтобы старые цифры не мешались)
+    lcd.print("                "); // Печатаем 16 пробелов
+    lcd.setCursor(0, 1); // Возвращаем курсор в начало строки
+
+    // Выводим секунды и сотые
+    lcd.print(seconds);
+    lcd.print(".");
+    if (hundredths < 10) lcd.print("0"); // Добавляем ноль перед однозначными числами
+    lcd.print(hundredths);
+
+    delay(10); // Обновление каждые 10 мс
+}
