@@ -1,0 +1,28 @@
+17.1
+#include <Servo.h>
+
+#define POT_MAX_ANGLE 1024 // максимальное значение с потенциометра
+
+Servo myServo;
+
+// Определяем массив из 8 фиксированных углов
+int positions[] = {45, 135, 87, 0, 65, 90, 180, 150};
+int numPositions = sizeof(positions) / sizeof(positions[0]);
+
+void setup()
+{
+    myServo.attach(9);
+}
+
+void loop()
+{
+    int val = analogRead(A0);
+    
+    // Определяем индекс в массиве positions в зависимости от входного сигнала
+    int index = map(val, 0, POT_MAX_ANGLE, 0, numPositions - 1);
+    
+    // Устанавливаем сервопривод в нужное положение
+    myServo.write(positions[index]);
+    
+    delay(100); // небольшая задержка для стабилизации
+}
