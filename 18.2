@@ -1,0 +1,56 @@
+#include <LiquidCrystal.h>
+
+// Инициализация LCD-дисплея
+LiquidCrystal lcd(13, 12, 11, 10, 9, 8);
+
+// Определяем падение напряжения на диоде
+#define DIODE_DROP 0.7 
+
+// Переменная для хранения времени последней отправки данных
+unsigned long lastSerialTime = 0;
+
+void setup() {
+    lcd.begin(16, 2);  // Инициализация дисплея
+    lcd.print("Stopwatch & V");  // Заголовок
+    Serial.begin(9600); // Запуск Serial для передачи данных на ПК
+}
+
+void loop() {
+    // Измеряем напряжение батарейки
+    float voltage = analogRead(A0) / 1024.0 * 10.0;
+    if (voltage > 0.1) voltage += DIODE_DROP;
+
+    // Получаем время работы
+    unsigned long timeMillis = millis();
+    unsigned long seconds = timeMillis / 1000; // Полные секунды
+    unsigned long hundredths = (timeMillis % 1000) / 10; // Сотые доли секунды
+
+    // Очищаем вторую строку перед обновлением
+    lcd.setCursor(0, 1);
+    lcd.print("                "); // Очищаем строку
+    lcd.setCursor(0, 1);
+
+    // Выводим секунды, сотые секунды и напряжение
+    lcd.print(seconds);
+    lcd.print(".");
+    if (hundredths < 10) lcd.print("0");
+    lcd.print(hundredths);
+    lcd.print("s ");
+    lcd.print(voltage, 2);
+    lcd.print("V");
+
+    // Раз в 10 секунд отправляем данные на компьютер
+    if (timeMillis - lastSerialTime >= 10000) {
+        lastSerialTime = timeMillis;
+        Serial.print("Time: ");
+        Serial.print(seconds);
+        Serial.print(".");
+        if (hundredths < 10) Serial.print("0");
+        Serial.print(hundredths);
+        Serial.print("s, Voltage: ");
+        Serial.print(voltage, 2);
+        Serial.println("V");
+    }
+
+    delay(10); // Обновление дисплея каждые 10 мс
+}
